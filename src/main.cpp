@@ -1,6 +1,6 @@
 #include <string.h>
 #include <string>
-
+#include <iostream>
 
 using namespace std;
 
@@ -234,6 +234,7 @@ void initialize(string audio){
 int main(int argc, char const *argv[]){
     int frame_rate = 30;
     initialize("audio.mp3");
+    cout << "Teste" << endl;
     
     return 0;
 }
