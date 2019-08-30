@@ -29,19 +29,31 @@ extern "C" {
 using namespace std;
 
  
+
+
+
+
+
+
+
+
 int main(int argc, char *argv[]){
 
     av_register_all();
     // avdevice_register_all();
     avcodec_register_all();
     avformat_network_init();
+
  
     const char  *filenameSrc = "rtp://127.0.0.1:1234";
  
+    AVCodec * pCodec;
     AVCodecContext  *pCodecCtx;
     AVFormatContext *pFormatCtx = avformat_alloc_context();
+    // AVPacket avpkt;
+    // av_init_packet(&avpkt);
  
-    AVCodec * pCodec;
+    
     cout << "Aguardando 0" << endl;
  
     if(avformat_open_input(&pFormatCtx,filenameSrc,NULL,NULL) != 0) return -12;
@@ -50,18 +62,11 @@ int main(int argc, char *argv[]){
     if(avformat_find_stream_info(pFormatCtx, NULL) < 0)   return -13;
     av_dump_format(pFormatCtx, 0, filenameSrc, 0);
     
-    int videoStream = 1;
-    cout << "Aguardando 2" << endl;
-
-    for(int i=0; i < pFormatCtx->nb_streams; i++) {
-        if(pFormatCtx->streams[i]->codec->coder_type == AVMEDIA_TYPE_VIDEO){
-            videoStream = i;
-            break;
-        }
-    }
-    cout << "Aguardando 3" << endl;
+    int videoStream = 0;
+    
+    cout << "Aguardando 3 " << videoStream << endl;
  
-    if(videoStream == -1) return -14;
+
     pCodecCtx = pFormatCtx->streams[videoStream]->codec;
  
     pCodec =avcodec_find_decoder(pCodecCtx->codec_id);
@@ -76,45 +81,54 @@ int main(int argc, char *argv[]){
     int res;
     int frameFinished;
     AVPacket packet;
+
+    // while (packet.size > 0) {
+    //     cout << "Algo chegando aqui" << endl;
+    //     out_size = AVCODEC_MAX_AUDIO_FRAME_SIZE;
+    //     len = avcodec_decode_audio3(c, (short *)outbuf, &out_size, &avpkt);
+    //     if (len < 0) {
+    //         fprintf(stderr, "Error while decoding\n");
+    //         exit(1);
+    //     }
+    //     if (out_size > 0) {
+    //         /* if a frame has been decoded, output it */
+    //         fwrite(outbuf, 1, out_size, outfile);
+    //     }
+    //     avpkt.size -= len;
+    //     avpkt.data += len;
+    //     if (avpkt.size < AUDIO_REFILL_THRESH) {
+    //         /* Refill the input buffer, to avoid trying to decode
+    //          * incomplete frames. Instead of this, one could also use
+    //          * a parser, or use a proper container format through
+    //          * libavformat. */
+    //         memmove(inbuf, avpkt.data, avpkt.size);
+    //         avpkt.data = inbuf;
+    //         len = fread(avpkt.data + avpkt.size, 1,
+    //                     AUDIO_INBUF_SIZE - avpkt.size, f);
+    //         if (len > 0)
+    //             avpkt.size += len;
+    //     }
+    // }
+
+
+
     while(res = av_read_frame(pFormatCtx,&packet)>=0)   {
         cout << "Algo chegando " << endl;
         if(packet.stream_index == videoStream){
-            // if(frameFinished){
-            //     struct SwsContext * img_convert_ctx;
-            //     img_convert_ctx = sws_getCachedContext(NULL,pCodecCtx->width, pCodecCtx->height, pCodecCtx->pix_fmt,   pCodecCtx->width, pCodecCtx->height, AV_PIX_FMT_BGR24, SWS_BICUBIC, NULL, NULL,NULL);
-            //     sws_scale(img_convert_ctx, ((AVPicture*)pFrame)->data, ((AVPicture*)pFrame)->linesize, 0, pCodecCtx->height, ((AVPicture *)pFrameRGB)->data, ((AVPicture *)pFrameRGB)->linesize);
- 
-            //     // cv::Mat img(pFrame->height,pFrame->width,CV_8UC3,pFrameRGB->data[0]); //dst->data[0]);
-            //     // cv::imshow("display",img);
-            //     // cvWaitKey(1);
- 
-            //     av_free_packet(&packet);
-            //     sws_freeContext(img_convert_ctx);
-                 
-            // }
+            if(frameFinished){
+                len = avcodec_decode_audio3(c, (short *)outbuf, &out_size, &avpkt);
+                // av_free_packet(&packet);
+
+            }
         }
     }
  
-    av_free_packet(&packet);
+    av_packet_unref(&packet);
     avcodec_close(pCodecCtx);
     avformat_close_input(&pFormatCtx);
  
     return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
