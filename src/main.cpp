@@ -1,241 +1,203 @@
+#include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <string>
-#include <iostream>
+#include <strings.h>
+#ifdef HAVE_AV_CONFIG_H
+#undef HAVE_AV_CONFIG_H
+#endif
+
+#include "libavcodec/avcodec.h"
+#include "libavutil/mathematics.h"
+#include <errno.h>
+#include "libavutil/avutil.h"
+
+
+extern "C" {
+         #include <libavcodec/avcodec.h>
+         #include <libavformat/avformat.h>
+         #include <libswscale/swscale.h>
+         #include <libavutil/imgutils.h>
+}
+
+
+#define INBUF_SIZE 4096
+#define AUDIO_INBUF_SIZE 20480
+#define AUDIO_REFILL_THRESH 4096
 
 using namespace std;
 
-void initialize(string audio){
 
+
+/*
+ * Audio encoding example
+ */
+static void audio_encode_example(const char *filename) {
+    // AVCodec *codec;
+    // AVCodecContext *c= NULL;
+    // int frame_size, i, j, out_size, outbuf_size;
+    // FILE *f;
+    // short *samples;
+    // float t, tincr;
+    // uint8_t *outbuf;
+
+    // printf("Audio encoding\n");
+
+    // /* find the MP2 encoder */
+    // codec = avcodec_find_encoder(CODEC_ID_MP2);
+    // if (!codec) {
+    //     fprintf(stderr, "codec not found\n");
+    //     exit(1);
+    // }
+
+    // c= avcodec_alloc_context();
+
+    // /* put sample parameters */
+    // c->bit_rate = 64000;
+    // c->sample_rate = 44100;
+    // c->channels = 2;
+
+    // /* open it */
+    // if (avcodec_open(c, codec) < 0) {
+    //     fprintf(stderr, "could not open codec\n");
+    //     exit(1);
+    // }
+
+    // /* the codec gives us the frame size, in samples */
+    // frame_size = c->frame_size;
+    // samples = malloc(frame_size * 2 * c->channels);
+    // outbuf_size = 10000;
+    // outbuf = malloc(outbuf_size);
+
+    // f = fopen(filename, "wb");
+    // if (!f) {
+    //     fprintf(stderr, "could not open %s\n", filename);
+    //     exit(1);
+    // }
+
+    // /* encode a single tone sound */
+    // t = 0;
+    // tincr = 2 * M_PI * 440.0 / c->sample_rate;
+    // for(i=0;i<200;i++) {
+    //     for(j=0;j<frame_size;j++) {
+    //         samples[2*j] = (int)(sin(t) * 10000);
+    //         samples[2*j+1] = samples[2*j];
+    //         t += tincr;
+    //     }
+    //     /* encode the samples */
+    //     out_size = avcodec_encode_audio(c, outbuf, outbuf_size, samples);
+    //     fwrite(outbuf, 1, out_size, f);
+    // }
+    // fclose(f);
+    // free(outbuf);
+    // free(samples);
+
+    // avcodec_close(c);
+    // av_free(c);
+}
+
+// /*
+//  * Audio decoding.
+//  */
+static void audio_decode_example(const char *outfilename, const char *filename){
+//     AVCodec *codec;
+//     AVCodecContext *c= NULL;
+//     int out_size, len;
+//     FILE *f, *outfile;
+//     uint8_t *outbuf;
+//     uint8_t inbuf[AUDIO_INBUF_SIZE + FF_INPUT_BUFFER_PADDING_SIZE];
+//     AVPacket avpkt;
+
+//     av_init_packet(&avpkt);
+
+//     printf("Audio decoding\n");
+
+//     /* find the mpeg audio decoder */
+//     codec = avcodec_find_decoder(CODEC_ID_MP2);
+//     if (!codec) {
+//         fprintf(stderr, "codec not found\n");
+//         exit(1);
+//     }
+
+//     c= avcodec_alloc_context();
+
+//     /* open it */
+//     if (avcodec_open(c, codec) < 0) {
+//         fprintf(stderr, "could not open codec\n");
+//         exit(1);
+//     }
+
+//     outbuf = malloc(AVCODEC_MAX_AUDIO_FRAME_SIZE);
+
+//     f = fopen(filename, "rb");
+//     if (!f) {
+//         fprintf(stderr, "could not open %s\n", filename);
+//         exit(1);
+//     }
+//     outfile = fopen(outfilename, "wb");
+//     if (!outfile) {
+//         av_free(c);
+//         exit(1);
+//     }
+
+//     /* decode until eof */
+//     avpkt.data = inbuf;
+//     avpkt.size = fread(inbuf, 1, AUDIO_INBUF_SIZE, f);
+
+//     while (avpkt.size > 0) {
+//         out_size = AVCODEC_MAX_AUDIO_FRAME_SIZE;
+//         len = avcodec_decode_audio3(c, (short *)outbuf, &out_size, &avpkt);
+//         if (len < 0) {
+//             fprintf(stderr, "Error while decoding\n");
+//             exit(1);
+//         }
+//         if (out_size > 0) {
+//             /* if a frame has been decoded, output it */
+//             fwrite(outbuf, 1, out_size, outfile);
+//         }
+//         avpkt.size -= len;
+//         avpkt.data += len;
+//         if (avpkt.size < AUDIO_REFILL_THRESH) {
+//             /* Refill the input buffer, to avoid trying to decode
+//              * incomplete frames. Instead of this, one could also use
+//              * a parser, or use a proper container format through
+//              * libavformat. */
+//             memmove(inbuf, avpkt.data, avpkt.size);
+//             avpkt.data = inbuf;
+//             len = fread(avpkt.data + avpkt.size, 1,
+//                         AUDIO_INBUF_SIZE - avpkt.size, f);
+//             if (len > 0)
+//                 avpkt.size += len;
+//         }
+//     }
+
+//     fclose(outfile);
+//     fclose(f);
+//     free(outbuf);
+
+//     avcodec_close(c);
+//     av_free(c);
 }
 
 
-// int initialize_encoding_audio(const char *filename)
-// {
-//     int ret;
-//     AVCodecID aud_codec_id = AV_CODEC_ID_AAC;
-//     AVSampleFormat sample_fmt = AV_SAMPLE_FMT_FLTP;
 
-//     avcodec_register_all();
-//     av_register_all();
+int main(int argc, char **argv){
+    const char *filename;
 
-//     aud_codec = avcodec_find_encoder(aud_codec_id);
-//     avcodec_register(aud_codec);
+    /* must be called before using avcodec lib */
 
-//     if (!aud_codec)
-//         return COULD_NOT_FIND_AUD_CODEC;
+    // /* register all the codecs */
+    av_register_all();
 
-//     aud_codec_context = avcodec_alloc_context3(aud_codec);
-//     if (!aud_codec_context)
-//         return CONTEXT_CREATION_ERROR;
+    if (argc <= 1) {
+        audio_encode_example("test.mp3");
+    //     audio_decode_example("/tmp/test.sw", "/tmp/test.mp2");
+    //     filename = "/test.mpg";
+    } else {
+        filename = argv[1];
+    }
 
-//     aud_codec_context->bit_rate = 192000;
-//     aud_codec_context->sample_rate = select_sample_rate(aud_codec);
-//     aud_codec_context->sample_fmt = sample_fmt;
-//     aud_codec_context->channel_layout = AV_CH_LAYOUT_STEREO;
-//     aud_codec_context->channels = av_get_channel_layout_nb_channels(aud_codec_context->channel_layout);
+    audio_decode_example("test.sw", filename);
 
-//     aud_codec_context->codec = aud_codec;
-//     aud_codec_context->codec_id = aud_codec_id;
-
-//     ret = avcodec_open2(aud_codec_context, aud_codec, NULL);
-
-//     if (ret < 0)
-//         return COULD_NOT_OPEN_AUD_CODEC;
-
-//     outctx = avformat_alloc_context();
-//     ret = avformat_alloc_output_context2(&outctx, NULL, "mp4", filename);
-
-//     outctx->audio_codec = aud_codec;
-//     outctx->audio_codec_id = aud_codec_id;
-
-//     audio_st = avformat_new_stream(outctx, aud_codec);
-
-//     audio_st->codecpar->bit_rate = aud_codec_context->bit_rate;
-//     audio_st->codecpar->sample_rate = aud_codec_context->sample_rate;
-//     audio_st->codecpar->channels = aud_codec_context->channels;
-//     audio_st->codecpar->channel_layout = aud_codec_context->channel_layout;
-//     audio_st->codecpar->codec_id = aud_codec_id;
-//     audio_st->codecpar->codec_type = AVMEDIA_TYPE_AUDIO;
-//     audio_st->codecpar->format = sample_fmt;
-//     audio_st->codecpar->frame_size = aud_codec_context->frame_size;
-//     audio_st->codecpar->block_align = aud_codec_context->block_align;
-//     audio_st->codecpar->initial_padding = aud_codec_context->initial_padding;
-
-//     outctx->streams = new AVStream*[1];
-//     outctx->streams[0] = audio_st;
-
-//     av_dump_format(outctx, 0, filename, 1);
-
-//     if (!(outctx->oformat->flags & AVFMT_NOFILE))
-//     {
-//         if (avio_open(&outctx->pb, filename, AVIO_FLAG_WRITE) < 0)
-//             return COULD_NOT_OPEN_FILE;
-//     }
-
-//     ret = avformat_write_header(outctx, NULL);
-
-//     aud_frame = av_frame_alloc();
-//     aud_frame->nb_samples = aud_codec_context->frame_size;
-//     aud_frame->format = aud_codec_context->sample_fmt;
-//     aud_frame->channel_layout = aud_codec_context->channel_layout;
-
-//     int buffer_size = av_samples_get_buffer_size(NULL, aud_codec_context->channels, aud_codec_context->frame_size,
-//         aud_codec_context->sample_fmt, 0);
-
-//     av_frame_get_buffer(aud_frame, buffer_size / aud_codec_context->channels);
-
-//     if (!aud_frame)
-//         return COULD_NOT_ALLOCATE_FRAME;
-
-//     aud_frame_counter = 0;
-
-//     return 0;
-// }
-
-// int encode_audio_samples(uint8_t **aud_samples)
-// {
-//     int ret;
-
-//     int buffer_size = av_samples_get_buffer_size(NULL, aud_codec_context->channels, aud_codec_context->frame_size,
-//         aud_codec_context->sample_fmt, 0);
-
-//     for (size_t i = 0; i < buffer_size / aud_codec_context->channels; i++)
-//     {
-//         aud_frame->data[0][i] = aud_samples[0][i];
-//         aud_frame->data[1][i] = aud_samples[1][i];
-//     }
-
-//     aud_frame->pts = aud_frame_counter++;
-
-//     ret = avcodec_send_frame(aud_codec_context, aud_frame);
-//     if (ret < 0)
-//         return ERROR_ENCODING_SAMPLES_SEND;
-
-//     AVPacket pkt;
-//     av_init_packet(&pkt);
-//     pkt.data = NULL;
-//     pkt.size = 0;
-
-//     fflush(stdout);
-
-//     while (true)
-//     {
-//         ret = avcodec_receive_packet(aud_codec_context, &pkt);
-//         if (!ret)
-//         {
-//             av_packet_rescale_ts(&pkt, aud_codec_context->time_base, audio_st->time_base);
-
-//             pkt.stream_index = audio_st->index;
-//             av_write_frame(outctx, &pkt);
-//             av_packet_unref(&pkt);
-//         }
-//         if (ret == AVERROR(EAGAIN))
-//             break;
-//         else if (ret < 0)
-//             return ERROR_ENCODING_SAMPLES_RECEIVE;
-//         else
-//             break;
-//     }
-
-//     return 0;
-// }
-
-
-// int finish_audio_encoding()
-// {
-//     AVPacket pkt;
-//     av_init_packet(&pkt);
-//     pkt.data = NULL;
-//     pkt.size = 0;
-
-//     fflush(stdout);
-
-//     int ret = avcodec_send_frame(aud_codec_context, NULL);
-//     if (ret < 0)
-//         return ERROR_ENCODING_FRAME_SEND;
-
-//     while (true)
-//     {
-//         ret = avcodec_receive_packet(aud_codec_context, &pkt);
-//         if (!ret)
-//         {
-//             if (pkt.pts != AV_NOPTS_VALUE)
-//                 pkt.pts = av_rescale_q(pkt.pts, aud_codec_context->time_base, audio_st->time_base);
-//             if (pkt.dts != AV_NOPTS_VALUE)
-//                 pkt.dts = av_rescale_q(pkt.dts, aud_codec_context->time_base, audio_st->time_base);
-
-//             av_write_frame(outctx, &pkt);
-//             av_packet_unref(&pkt);
-//         }
-//         if (ret == -AVERROR(AVERROR_EOF))
-//             break;
-//         else if (ret < 0)
-//             return ERROR_ENCODING_FRAME_RECEIVE;
-//     }
-
-//     av_write_trailer(outctx);
-// }
-
-// void get_audio_frame(float_t *left_samples, float_t *right_samples, int frame_size, float* t, float* tincr, float* tincr2)
-// {
-//     int j, i;
-//     float v;
-//     for (j = 0; j < frame_size; j++)
-//     {
-//         v = sin(*t);
-//         *left_samples = v;
-//         *right_samples = v;
-
-//         left_samples++;
-//         right_samples++;
-
-//         *t += *tincr;
-//         *tincr += *tincr2;
-//     }
-// }
-
-// int main()
-// {
-//     int frame_rate = 30;  // this should be like 96000 / 1024 or somthing i guess?
-//     float t, tincr, tincr2;
-
-//     initialize_encoding_audio("audio.mp4");
-
-//     int sec = 50;
-
-//     float_t** aud_samples;
-//     int src_samples_linesize;
-//     int src_nb_samples = 1024;
-//     int src_channels = 2;
-
-//     int ret = av_samples_alloc_array_and_samples((uint8_t***)&aud_samples, &src_samples_linesize, src_channels,
-//         src_nb_samples, AV_SAMPLE_FMT_FLTP, 0);
-
-
-//     t = 0;
-//     tincr = 0;
-//     tincr2 = 0;
-
-//     for (size_t i = 0; i < frame_rate * sec; i++)
-//     {
-//         get_audio_frame(aud_samples[0], aud_samples[1], src_nb_samples, &t, &tincr, &tincr2);
-
-//         encode_audio_samples((uint8_t **)aud_samples);
-
-//     }
-
-//     finish_audio_encoding();
-//     //cleanup();
-
-//     return 0;
-// }
-
-
-int main(int argc, char const *argv[]){
-    int frame_rate = 30;
-    initialize("audio.mp3");
-    cout << "Teste" << endl;
-    
     return 0;
 }
-
