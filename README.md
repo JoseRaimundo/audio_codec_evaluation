@@ -1,3 +1,4 @@
+
 ### Cenário
 
 ![Base diagram](https://github.com/JoseRaimundo/audio_codec_evaluation/blob/master/img/base_diagram.png?raw=true)
@@ -6,7 +7,37 @@
 
  - Avaliação de diversos protocolos de envio de pacotes: UDP, TCP, **RTP**, RTCP.
  - Avaliação de diverso codecs de audio ([Ver lista aqui!](https://www.ffmpeg.org/general.html#toc-Audio-Codecs)).
+ 
+### Teoria
 
+#### Real Time Protocol
+
+RTP é um protocolo utilizado para o transporte de mídias contínuas de tempo real em uma conexão ponto a ponto, como áudio, vídeo ou dados de uma simulação. Pode ser usado em comuniçaões ponto a ponto ou broadcast, utilizando um endereço IP da faixa reservada para grupos. **Este protocolo não reserva recursos nem garante qualidade de serviço (QoS)**, porém ele é freqüentemente utilizado em paralelo com o RTCP (_RTP Control Protocol_) permitindo que haja uma certa monitoração da comunicação. O uso deste protocolo será descrito na sessão seguinte deste documento. RTP e RTCP são utilizados paralelamente mas os pacotes de cada protocolo são transmitidos de forma independente. Na Figura abaixo, é apresentado a estrutura do cabeçalho RTP.
+
+![CabecalhoRTP](https://github.com/JoseRaimundo/audio_codec_evaluation/blob/master/img/rtp_cabecalho.png?raw=true)
+
+ **V – versão, (2 bits)**. Usado para especificar a versão do RTP.
+
+0 : usado para especificar o primeiro protocolo utilizado na ferramenta de áudio “vat”.  
+1: especifica a primeira versão do RTP utilizada como teste.  
+2: identifica a versão do RTP especificada na RFC 1889.
+
+**P – Preenchimento/padding, (1 bit)**. Sinaliza a adição de octetos de enchimento adicionais ao conteúdo da carga (payload) sem fazer parte da mesma. O último octeto do preenchimento contém a informação de quantos octetos foram inseridos. Este preenchimento adicional é normalmente utilizado para uso de algoritmos de criptografia de tamanho de blocos fixos ou para transmissão de pequenos conteúdos.
+
+**X – Extensão/extension**, **(1 bit)**. Com esse bit marcado, é acrescentado uma extensão ao cabeçalho original.
+
+**CC - Contador CSRC/CSRC count, (4 bits)**. Este campo contém o número de identificadores CSRC.
+
+**M – marcador/marker, (1 bit)**. Usado para identificar as fronteiras de um quadro numa corrente de pacotes.
+
+**PT – Tipo de carga/payload type, (7 bits**). Este campo identifica o formato da carga do pacote RTP como também a determinação de sua interpretação pela aplicação.
+
+**Numeração seqüenciada/sequence number, (16 bits)** – A numeração seqüenciada põe em ordem os diversos pacotes de RTP. A cada novo pacote, a numeração é incrementada de uma unidade. Basicamente, esse ordenamento serve para o receptor detectar os pacotes perdidos e restaurar a seqüência de pacotes.  
+**Selo de temporização\timestamp, (16 bits)**. Esse campo reflete o instante de amostragem do primeiro octeto no pacote RTP.
+
+**SSRC, (32 bits)**. Esse campo identifica a fonte de sincronismo. Esta identificação foi escolhida aleatoriamente tencionando-se que duas fontes de sincronismo com a mesma sessão RTP não teriam o mesmo identificador SSRC.  
+
+**CSRC, (itens de 0 a 15, 32 bits cada)**. A lista SCRC identifica a contribuição da fonte no conteúdo da carga (payload) de cada pacote. O número de identificadores é dado pelo campo CC. Se houver mais de 15 fontes contribuintes, somente 15 serão identificadas.
 
 ### Experimento
 
@@ -183,3 +214,13 @@ Decoder:
 ### Sites úteis
 
 [https://trac.ffmpeg.org/wiki/audio%20types](https://trac.ffmpeg.org/wiki/audio%20types)  [https://www.wowza.com/docs/how-to-restream-using-ffmpeg-with-wowza-streaming-engine](https://www.wowza.com/docs/how-to-restream-using-ffmpeg-with-wowza-streaming-engine)
+
+
+### Referência
+
+
+
+
+- <https://www.gta.ufrj.br/grad/03_1/rtp/rtp31.htm>
+- <https://www.gta.ufrj.br/grad/01_2/vidconf/rtp.html>
+
