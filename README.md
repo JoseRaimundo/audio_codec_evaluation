@@ -12,7 +12,7 @@
 
 #### Real Time Protocol
 
-RTP é um protocolo utilizado para o transporte de mídias contínuas de tempo real em uma conexão ponto a ponto, como áudio, vídeo ou dados de uma simulação. Pode ser usado em comuniçaões ponto a ponto ou broadcast, utilizando um endereço IP da faixa reservada para grupos. **Este protocolo não reserva recursos nem garante qualidade de serviço (QoS)**, porém ele é freqüentemente utilizado em paralelo com o RTCP (_RTP Control Protocol_) permitindo que haja uma certa monitoração da comunicação. O uso deste protocolo será descrito na sessão seguinte deste documento. RTP e RTCP são utilizados paralelamente mas os pacotes de cada protocolo são transmitidos de forma independente. Na Figura abaixo, é apresentado a estrutura do cabeçalho RTP.
+RTP é um protocolo utilizado para o transporte de mídias contínuas de tempo real em uma conexão ponto a ponto, como áudio, vídeo ou dados de uma simulação. Pode ser usado em comuniçaões ponto a ponto ou broadcast, utilizando um endereço IP da faixa reservada para grupos. **Este protocolo não reserva recursos nem garante qualidade de serviço (QoS)**, porém ele é frequentemente utilizado em paralelo com o RTCP (_RTP Control Protocol_) permitindo que haja uma certa monitoração da comunicação. O uso deste protocolo será descrito na sessão seguinte deste documento. RTP e RTCP são utilizados paralelamente mas os pacotes de cada protocolo são transmitidos de forma independente. Na Figura abaixo, é apresentado a estrutura do cabeçalho RTP.
 
 ![CabecalhoRTP](https://github.com/JoseRaimundo/audio_codec_evaluation/blob/master/img/rtp_cabecalho.png?raw=true)
 
